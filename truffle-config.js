@@ -5,6 +5,7 @@ module.exports = {
       port: 7545,
       network_id: "*", // Match any network id
       //gas: 5000000
+      //from: '0x678930A16a8EE99D17423CC064188459BC25D110'
     }
   },
   contracts_directory: './src/contracts',
