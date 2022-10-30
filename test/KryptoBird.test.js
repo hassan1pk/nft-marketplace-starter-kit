@@ -9,14 +9,18 @@ require('chai')
 .should()
 
 contract('KryptoBird', (accounts) => {
-    let contract;
+
+    let contract
+    before( async() => {
+        contract  = await KryptoBird.deployed();
+    })
 
     //testing container - describe
 
     describe('deployment', async() => {
         //test sample with writing it
         it('deploys successfully', async() =>{
-            contract = await KryptoBird.deployed();
+            
             const address = contract.address;
 
             assert.notEqual(address, '');
@@ -35,6 +39,45 @@ contract('KryptoBird', (accounts) => {
             const name = await contract.symbol();
             
             assert.equal(name,'KBIRDZ');
+        })
+    })
+
+    describe('minting', async() => {
+        it('creates a new token', async() =>{
+            const result = await contract.mint('https...1');
+            const totalSupply = await contract.totalSupply();
+
+            //Success
+            assert.equal(totalSupply, 1);
+            const event = result.logs[0].args;
+
+            assert.equal(event._from, '0x0000000000000000000000000000000000000000', 'from is the contract' )
+            assert.equal(event._to, accounts[0], 'to is msg.sender');
+
+            //Failure
+            await contract.mint('https...1').should.be.rejected;
+        })
+    })
+
+    describe('indexing', async()=> {
+        it('lists KryptoBirdz', async() => {
+            //mint 3 new tokens
+            await contract.mint('https...2');
+            await contract.mint('https...3');
+            await contract.mint('https...4');
+            const totalSupply = await contract.totalSupply();
+
+            //lopp through list and grab KBirdz from list
+            let result = [];
+            let KryptoBird;
+            for(i=0; i<totalSupply; i++)
+            {
+                KryptoBird = await contract.kryptoBirdz(i);
+                result.push(KryptoBird);
+            }
+
+            let expected = ['https...1', 'https...2','https...3','https...4'];
+            assert.equal(result.join(','), expected.join(','));
         })
     })
 })
