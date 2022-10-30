@@ -1,6 +1,6 @@
 //const ConvertLib = artifacts.require("ConvertLib");
 //const MetaCoin = artifacts.require("MetaCoin");
-const KryptoBird = artifacts.require("Kryptobird");
+const KryptoBird = artifacts.require("KryptoBird");
 
 module.exports = function(deployer) {
   /*deployer.deploy(ConvertLib);
