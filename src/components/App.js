@@ -12,7 +12,8 @@ class App extends Component {
   }
 
   async loadWeb3() {
-    const provider = await detectEthereumProvider();
+    const provider = await detectEthereumProvider(); //this uses metamask detect ethereum provider to get a provider
+    //const provider = Web3.givenProvider; //this uses the web3 library to get the provider
 
     //modern browsers
     if (provider) {
