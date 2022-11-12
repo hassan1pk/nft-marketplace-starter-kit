@@ -48,7 +48,7 @@ class App extends Component {
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
-    this.setState({ account: accounts });
+    this.setState({ account: accounts[0] });
     //console.log(this.state.account);
     /*const networkId = await window.web3.eth.net.getId();
     console.log(networkId);*/
@@ -60,20 +60,51 @@ class App extends Component {
       const address = networkData.address;
       //const contract = new Contract(abi, address);
       const contract = new window.web3.eth.Contract(abi, address);
-      console.log(contract);
+      this.setState({ contract });
+      console.log(this.state.contract);
+
+      //call the total supply of our contract
+      var totalSupply = await contract.methods.totalSupply().call();
+      this.setState({ totalSupply });
+      console.log("total supply", this.state.totalSupply);
+      for (let i = 0; i < this.state.totalSupply; i++) {
+        const KryptoBird = await contract.methods.kryptoBirdz(i).call();
+        //result.push(KryptoBird);
+
+        this.setState({ kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird] });
+      }
+      console.log(this.state.kryptoBirdz);
+    } else {
+      window.alert("Smart contract not deployed");
     }
   }
+
+  mint = (kryptoBird) => {
+    this.state.contract.methods
+      .mint(kryptoBird)
+      .send({ from: this.state.account })
+      .once("receipt", (receipt) => {
+        this.setState({ kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird] });
+      });
+
+    console.log(kryptoBird);
+  };
 
   constructor(props) {
     super(props);
     this.state = {
       account: "",
+      contract: null,
+      totalSupply: 0,
+      kryptoBirdz: [],
+      //nftPath: "",
     };
   }
 
   render() {
     return (
       <div>
+        {console.log("array of tokens", this.state.kryptoBirdz)}
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
           <div
             className="navbar-brand col-sm-3 col-md-3 mr-0"
@@ -87,6 +118,48 @@ class App extends Component {
             </li>
           </ul>
         </nav>
+
+        <div className="container-fluid mt-1">
+          <div className="row">
+            <main role="main" className="col-lg-12 d-flex text-center">
+              <div
+                className="content mr-auto ml-auto"
+                style={{ opacity: "0.8" }}
+              >
+                <h1 style={{ color: "white" }}>
+                  KryptoBirdz - NFT Marketplace
+                </h1>
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    //const kryptoBird = this.state.nftPath;
+                    const kryptoBird = this.kryptoBird.value;
+                    this.mint(kryptoBird);
+                    //this.setState({ nftPath: "" });
+                    this.kryptoBird.value = "";
+                  }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Add file location"
+                    className="form-control mb-1"
+                    /*value={this.state.nftPath}
+                    onChange={(event) => {
+                      this.setState({ nftPath: event.target.value });
+                    }}*/
+                    ref={(input) => (this.kryptoBird = input)}
+                  ></input>
+                  <input
+                    step={{ margin: "6px" }}
+                    type="submit"
+                    className="btn btn-primary btn-black"
+                    value="MINT"
+                  ></input>
+                </form>
+              </div>
+            </main>
+          </div>
+        </div>
       </div>
     );
   }
