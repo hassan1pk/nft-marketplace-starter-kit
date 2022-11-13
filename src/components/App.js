@@ -3,6 +3,15 @@ import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
 import KryptoBird from "../abis/KryptoBird.json";
 //import Contract from "web3-eth-contract";
+import {
+  MDBCard,
+  MDBCardBody,
+  MDBCardText,
+  MDBCardImage,
+  MDBBtn,
+  MDBCardTitle,
+} from "mdb-react-ui-kit";
+import "./App.css";
 
 class App extends Component {
   async componentDidMount() {
@@ -103,7 +112,7 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="container-filled">
         {console.log("array of tokens", this.state.kryptoBirdz)}
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
           <div
@@ -126,7 +135,7 @@ class App extends Component {
                 className="content mr-auto ml-auto"
                 style={{ opacity: "0.8" }}
               >
-                <h1 style={{ color: "white" }}>
+                <h1 style={{ color: "black" }}>
                   KryptoBirdz - NFT Marketplace
                 </h1>
                 <form
@@ -159,6 +168,33 @@ class App extends Component {
               </div>
             </main>
           </div>
+          <hr></hr>
+          <div className="row textCenter">
+            {this.state.kryptoBirdz.map((kryptoBird, key) => {
+              return (
+                <div key={key}>
+                  <MDBCard className="token img" style={{ maxWidth: "22rem" }}>
+                    <MDBCardImage
+                      src={kryptoBird}
+                      height="250rem"
+                      position="top"
+                      style={{ marginRight: "4px" }}
+                    ></MDBCardImage>
+                    <MDBCardBody>
+                      <MDBCardTitle>KryptoBirdz</MDBCardTitle>
+                      <MDBCardText>
+                        The KryptoBirdz are 20 uniquely generated KBirdz from
+                        the cyberpunk cloud galaxy Mystopia. There is only one
+                        of each birad and each bird can be owned by a single
+                        person on the Ethereum blockhain
+                      </MDBCardText>
+                      <MDBBtn href={kryptoBird}>Download</MDBBtn>
+                    </MDBCardBody>
+                  </MDBCard>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -166,3 +202,17 @@ class App extends Component {
 }
 
 export default App;
+
+/*
+https://i.ibb.co/gyNcf7b/k01.png
+https://i.ibb.co/CBFs7pV/k02.png
+https://i.ibb.co/S6V4yc3/k03.png
+https://i.ibb.co/kyBZBpj/k04.png
+https://i.ibb.co/JKSX1vf/k05.png
+https://i.ibb.co/QJbDCsR/k06.png
+https://i.ibb.co/qgxdsL5/k07.png
+https://i.ibb.co/z5LRCkB/k08.png
+https://i.ibb.co/Zz7LhYd/k09.png
+https://i.ibb.co/8DcSdgm/k10.png
+https://i.ibb.co/6b07WMQ/k11.png
+*/
