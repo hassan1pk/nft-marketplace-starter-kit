@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import './ERC165.sol';
 import './interfaces/IERC721.sol';
+import './libraries/Counters.sol';
 
 /*
 building out the minting function:
@@ -15,7 +16,8 @@ building out the minting function:
 */
 
 contract ERC721 is ERC165, IERC721 {
-
+    using SafeMath for uint256;
+    using Counters for Counters.Counter;
     /*event Transfer(
         address indexed from, 
         address indexed to, 
@@ -30,7 +32,7 @@ contract ERC721 is ERC165, IERC721 {
 
     mapping(uint256 => address) private _tokenOwner;
 
-    mapping(address => uint256) private _OwnedTokensCount;
+    mapping(address => Counters.Counter) private _OwnedTokensCount;
 
     mapping(uint256 => address) private _tokenApprovals;
 
@@ -42,7 +44,7 @@ contract ERC721 is ERC165, IERC721 {
 
     function balanceOf(address _owner) public override view returns(uint256) {
         require(_owner != address(0), 'Owner query for non-existent token');
-        return _OwnedTokensCount[_owner];
+        return _OwnedTokensCount[_owner].current();
     }
 
     function ownerOf(uint256 _tokenId) public override view returns(address) {
@@ -61,7 +63,8 @@ contract ERC721 is ERC165, IERC721 {
         //require(_tokenOwner[tokenId] == address(0));
         require(!_exists(tokenId),'ER721: token already minted');
         _tokenOwner[tokenId] = to;
-        _OwnedTokensCount[to] += 1;
+        //_OwnedTokensCount[to] += 1;
+        _OwnedTokensCount[to].increment();
 
         emit Transfer(address(0), to, tokenId);
     }
@@ -70,8 +73,10 @@ contract ERC721 is ERC165, IERC721 {
         require(_to != address(0), 'ERC271: token cannot be transferred to the zero address');
         require(ownerOf(_tokenId) == _from, 'ERC271: the from address does not own the token being transferred');
         _tokenOwner[_tokenId] = _to;
-        _OwnedTokensCount[_from] -= 1;
-        _OwnedTokensCount[_to] += 1;
+        /*_OwnedTokensCount[_from] -= 1;
+        _OwnedTokensCount[_to] += 1;*/
+        _OwnedTokensCount[_from].decrement();
+        _OwnedTokensCount[_to].increment();
 
         emit Transfer(_from, _to, _tokenId);
 
